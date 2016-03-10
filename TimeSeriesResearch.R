@@ -10,10 +10,14 @@ library(GGally)
 opts_chunk$set(warning = FALSE, message = FALSE)
 
 #CHANGE TO WORKING DIRECTORY
-setwd("~/Documents/MIDS/210Capstone/should-i-go-sandbox/")
+setwd("~/datasci/W210/should-i-go-sandbox/")
 
 # Load Datasets
 data <- read.csv('Jan2015_TimeSeries.csv')
+
+speed <- data[ data$REGION_ID == 1, ]$SPEED
+plot.ts(speed)
+plot.ts(speed[0:1000])
 
 # Remove zero and irrationally high values
 data_nozero <-data[data$SPEED>0,]  
