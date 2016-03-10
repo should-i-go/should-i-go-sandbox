@@ -18,6 +18,18 @@ data <- read.csv('Jan2015_TimeSeries.csv')
 speed <- data[ data$REGION_ID == 1, ]$SPEED
 plot.ts(speed)
 plot.ts(speed[0:1000])
+region1 <- data[ data$REGION_ID == 1,  ]
+region1$HOUR <- substring(as.character(region1$TIMESTAMP),1,2)
+not5 <- region1[region1$HOUR > '05', ]
+not5 [ not5$SPEED < 17.0, ]
+plot.ts(not5$SPEED)
+
+
+
+
+plot.ts(region1$SPEED)
+region1_first200 <- region1[ 0:200,  ]
+plot.ts(region1_first200$SPEED)
 
 # Remove zero and irrationally high values
 data_nozero <-data[data$SPEED>0,]  
