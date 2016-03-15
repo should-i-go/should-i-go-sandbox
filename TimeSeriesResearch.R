@@ -102,14 +102,80 @@ ggplot(data=data_West, aes(x=DAYHOUR, y=SPEED)) +
 
 # boxplot
 ggplot(data = data_West, aes(x = HOUR,y = SPEED)) +
-  geom_point(aes(colour = factor(HasGame), alpha = 0.05)) +
+  geom_point(aes(color = factor(HasGame), alpha = 0.05)) +
   geom_boxplot(alpha = 0.5, outlier.size = 0.2)+
   ggtitle('West Town Speed by Hour') +
   ylab('Speed') +
   xlab('Hour') 
 
 
-
 # Seeing some odd values - too high, too low
 HighData <- data_nozero[data_nozero$SPEED<10,]
+
+
+data_West <-data_nozero[data_nozero$REGION=='West Town-Near West',]  
+summary(data_West)
+str(data_West)
+head(data_West)
+tail(data_West)
+
+# Sort data
+data_West <- data_West[order(data_West$datetime) , ]
+
+# Plot data as time series object
+ts_West <-  ts(data_West$SPEED)
+plot(ts_West, type="l")
+summary(ts_West)
+
+# scatterplot with color-coded points
+ggplot(data=data_West, aes(x=datetime, y=SPEED)) +
+  geom_point(aes(colour = factor(HasGame))) +
+  ggtitle(paste('West Town Traffic at each Weekday and Hour')) +
+  xlab('Timestamp') +
+  ylab('Traffic Speed') + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) 
+
+
+
+# NOW LET'S LOOK AT TIME SERIES
+data_nozero$datetime <- format(as.POSIXct(paste(data_nozero$DATE, data_nozero$TIMESTAMP)), "%Y-%m-%d %H:%M:%S")
+data_nozero$datetime <- strptime(data_nozero$datetime, "%Y-%m-%d %H:%M:%S")
+data_nozero$HOUR <- as.factor(data_nozero$HOUR)
+data_nozero$WEEKDAY <- as.factor(data_nozero$WEEKDAY)
+
+
+# Sort data
+data_nozero <- data_nozero[order(data_nozero$datetime) , ]
+
+
+# Linear Regression Model
+rm1 <- lm(SPEED ~ REGION + WEEKDAY + HOUR + REGION:WEEKDAY + REGION:HOUR,data = data_nozero)
+summary(rm1)
+
+rm2 <- lm(SPEED ~ REGION + WEEKDAY + HOUR + REGION:WEEKDAY,data = data_nozero)
+summary(rm2)
+
+rm3 <- lm(SPEED ~ REGION + WEEKDAY + HOUR,data = data_nozero)
+summary(rm3)
+
+rm4 <- lm(SPEED ~ REGION + WEEKDAY + HOUR + REGION:WEEKDAY + REGION:HOUR + HasGame,data = data_nozero)
+summary(rm4)
+
+rm5 <- lm(SPEED ~ REGION:WEEKDAY + REGION:HOUR + REGION:HasGame,data = data_nozero)
+summary(rm5)
+
+
+# Predict speed with and without game
+test_data_nogame <- data_nozero[(data_nozero$DATE == "2015-01-05" & data_nozero$HOUR == '20' & data_nozero$TIMESTAMP=="20:00:00"), ]
+test_data_nogame$HasGame <- 0
+test_data_nogame$PredictedRate <- predict(rm1, newdata = test_data_nogame) 
+test_data_nogame <- test_data_nogame[, c('datetime','REGION_ID','PredictedRate')]
+
+test_data_game <- data_nozero[(data_nozero$DATE == "2015-01-05" & data_nozero$HOUR == '20' & data_nozero$TIMESTAMP=="20:00:00"), ]
+test_data_game$HasGame <- 1
+test_data_game$PredictedRate <- predict(rm5, newdata = test_data_game) 
+test_data_game <- test_data_game[, c('datetime','REGION_ID','PredictedRate')]
+
+write.csv(test_data_nogame, file = "test_data_nogame.csv")
+write.csv(test_data_game, file = "test_data_game.csv")
 
