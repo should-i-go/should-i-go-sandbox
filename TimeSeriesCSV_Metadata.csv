@@ -1,0 +1,23 @@
+Metadata for TimeSeries.CSV
+
+SEGMENTID - numerical ID for Chicago traffic segment
+SPEED - average traffic speed in miles per hour for this segment on this date
+SPEED-SD - standard deviation of traffic speeds in miles per hour for this segment on this date
+SPEED-MIN - minimum traffic speed in miles per hour for this segment on this date
+SPEED-MAX - maximum traffic speed in miles per hour for this segment on this date
+SPEED-MED - median traffic speed in miles per hour for this segment on this date
+DATE - record date
+WEEKDAY - Monday = 0, Tuesday = 1, etc.
+DIRECTION - segment's traffic direction
+AvgLong - segment's average latitude
+AvgLat - segment's average longitude
+Result - game result (L = loss, W = win)
+OT - number of overtimes in game
+Lat - game location latitude
+Long - game location longitude
+GameTime - game official start time
+StartTime - traffic congestion start time (we assume one hour before game start time)
+EndTime - traffic congestion end time (2:30 after start time with no OT. Each OT adds 15 minutes)
+HasGame - 1 if a game exists on this date/time, 0 if not
+EventDistance - distance from segment average lat/long and location lat/long in miles
+POSTEDSPEED - posted road speed (30mph)
